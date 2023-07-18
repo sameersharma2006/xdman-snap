@@ -1,0 +1,119 @@
+name: xdman
+base: core20
+version: '8.0.29'
+summary: Powerfull download accelerator and video downloader. 
+description: |
+  XDM Is a Free and Advanced Download Manger For Linux.
+  It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume   
+  broken/dead downloads, schedule and convert downloads.
+grade: stable
+confinement: strict
+compression: lzo
+architectures:
+  - build-on: amd64   
+environment:
+   PYTHONPATH: ${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
+
+slots:
+  xdman:
+    interface: dbus
+    bus: session
+    name: xdm.app
+    
+apps:
+  xdman: 
+    command: opt/xdman/xdm-app
+    extensions: [gnome-3-38]
+    environment: 
+      TMPDIR: $XDG_RUNTIME_DIR
+    plugs:
+      - home
+      - network
+      - network-bind
+      - network-status
+      - browser-support
+      - audio-playback
+      - optical-drive
+      - removable-media
+      - unity7
+      - screen-inhibit-control
+
+parts:
+  ffmpeg:
+    plugin: autotools
+    source: https://ffmpeg.org/releases/ffmpeg-6.0.tar.xz
+    source-checksum: sha256/57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --libdir=/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
+      - --disable-debug
+      - --disable-doc
+      - --disable-static
+      - --enable-gpl
+      - --enable-shared
+      - --disable-ffplay
+      - --disable-devices
+      - --enable-gnutls
+      - --enable-libmp3lame
+      - --enable-libvorbis
+    build-packages:
+      - nasm
+      - libgnutls28-dev
+      - libmp3lame-dev
+      - libvorbis-dev
+    stage-packages:
+      - libmp3lame0
+    stage:
+      - -usr/include
+
+  yt-dlp:
+    # Missing optional dependencies atomicparsley, mpv, phantomjs and rtmpdump
+    after: [ffmpeg]
+    plugin: python
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
+    source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
+    python-packages:
+      - pyxattr==0.7.2
+    override-pull: |
+      snapcraftctl pull
+      sed -i 's/^certifi\b/#\0/' requirements.txt
+    
+  xdman:
+    source: https://github.com/subhra74/xdm/releases/download/8.0.29/xdman_gtk_8.0.29_amd64.deb
+    plugin: dump
+    stage-packages:
+      - curl 
+      - hicolor-icon-theme
+      - liblttng-ust0
+    
+  fatloss:
+    plugin: nil
+    after: [xdman]
+    override-prime: |
+      snapcraftctl prime
+      rm -r usr/share/doc
+      rm -r usr/share/man
+      rm -r usr/share/zsh     
+      rm -r usr/share/applications
+      rm -r usr/share/icons
+      rm usr/bin/xdman
+  
+  cleanup:
+    after:  
+      - fatloss
+    plugin: nil
+    build-snaps: 
+      - gnome-3-38
+      - core20
+      - gtk-common-themes
+    override-prime: |
+      set -eux
+      for snap in "gnome-3-38" "core20" "gtk-common-themes"; do
+      cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+      done  
+      
+      
+      
+     
+   
+   
