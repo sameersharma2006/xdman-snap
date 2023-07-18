@@ -67,17 +67,31 @@ parts:
       - -usr/include
 
   yt-dlp:
-    # Missing optional dependencies atomicparsley, mpv, phantomjs and rtmpdump
     after: [ffmpeg]
     plugin: python
     source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
     source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
     python-packages:
       - pyxattr==0.7.2
+    build-environment:
+      - PATH: ${SNAPCRAFT_PART_INSTALL}/bin:${PATH}
+      - PYTHONPATH: ""
     override-pull: |
       snapcraftctl pull
       sed -i 's/^certifi\b/#\0/' requirements.txt
-    
+    stage:
+      - -bin/activate
+      - -bin/activate.csh
+      - -bin/activate.fish
+      - -bin/Activate.ps1
+      - -bin/python
+      - -bin/python3
+      - -bin/python3.8
+      - -bin/pip
+      - -bin/pip3
+      - -bin/pip3.8
+      - -pyvenv.cfg
+      
   xdman:
     source: https://github.com/subhra74/xdm/releases/download/8.0.29/xdman_gtk_8.0.29_amd64.deb
     plugin: dump
