@@ -10,9 +10,10 @@ grade: stable
 confinement: strict
 compression: lzo
 architectures:
-  - build-on: amd64   
+  - build-on: amd64  
+   
 environment:
-   PYTHONPATH: ${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
+   PYTHONPATH: ${SNAP}/lib/python3.8/site-packages:${SNAP}/usr/lib/python3/dist-packages
 
 slots:
   xdman:
@@ -23,6 +24,8 @@ slots:
 apps:
   xdman: 
     command: opt/xdman/xdm-app
+    desktop: opt/xdman/xdm-app.desktop
+    common-id: xdm.app
     extensions: [gnome-3-38]
     environment: 
       TMPDIR: $XDG_RUNTIME_DIR
@@ -33,7 +36,6 @@ apps:
       - network-status
       - browser-support
       - audio-playback
-      - optical-drive
       - removable-media
       - unity7
       - screen-inhibit-control
@@ -105,9 +107,18 @@ parts:
       - hicolor-icon-theme
       - liblttng-ust0
     
-  fatloss:
+ 
+  snap-tweak:
     plugin: nil
     after: [xdman]
+    override-prime: |
+      snapcraftctl prime
+      sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
+      sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop    
+    
+  fatloss:
+    plugin: nil
+    after: [snap-tweak]
     override-prime: |
       snapcraftctl prime
       rm -rf usr/share/doc
@@ -115,6 +126,10 @@ parts:
       rm -rf usr/share/zsh     
       rm -rf usr/share/applications
       rm -rf usr/share/icons
+      rm -rf share/python-wheels
+      rm -rf share/doc
+      rm -rf share/man
+      rm -rf usr/share/ffmpeg/examples
       rm usr/bin/xdman
   
   cleanup:
