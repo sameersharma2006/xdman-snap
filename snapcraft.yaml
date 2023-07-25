@@ -21,6 +21,11 @@ slots:
     bus: session
     name: xdm.app
     
+plugs:
+  shmem:
+    interface: shared-memory
+    private: true
+  
 apps:
   xdman: 
     command: opt/xdman/xdm-app
@@ -39,7 +44,8 @@ apps:
       - removable-media
       - unity7
       - screen-inhibit-control
-
+      - shmem
+      
 parts:
   ffmpeg:
     plugin: autotools
