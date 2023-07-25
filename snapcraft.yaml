@@ -19,7 +19,7 @@ slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app
+    name: xdm.app  #Incorrect DBUS ID Set By Upstream, Could Be Changed In Future .
     
 plugs:
   shmem:
@@ -112,8 +112,7 @@ parts:
       - curl 
       - hicolor-icon-theme
       - liblttng-ust0
-    
- 
+   
   snap-tweak:
     plugin: nil
     after: [xdman]
@@ -137,11 +136,9 @@ parts:
       rm -rf share/man
       rm -rf usr/share/ffmpeg/examples
       rm usr/bin/xdman
-      rm -rf lib/python3.8/site-packages/setuptools
-      rm -rf lib/python3.8/site-packages/setuptools-44.0.0.dist-info
-      rm -rf lib/python3.8/site-packages/pip
-      rm -rf lib/python3.8/site-packages/pip-23.2.dist-info
-  
+      rm -rf lib/python3.8/site-packages/setuptools*
+      rm -rf lib/python3.8/site-packages/pip*
+     
   cleanup:
     after:  
       - fatloss
