@@ -1,6 +1,6 @@
 name: xdman
 base: core20
-version: '8.0.29'
+version: 8.0.29
 summary: Powerfull download accelerator and video downloader. 
 description: |
   XDM Is a Free and Advanced Download Manger For Linux.
@@ -40,8 +40,8 @@ apps:
       - network-bind
       - network-status
       - browser-support
-      - audio-playback
       - removable-media
+      - optical-drive
       - unity7
       - screen-inhibit-control
       - shmem
@@ -105,7 +105,7 @@ parts:
       - -pyvenv.cfg
       
   xdman:
-    source: https://github.com/subhra74/xdm/releases/download/8.0.29/xdman_gtk_8.0.29_amd64.deb
+    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_amd64.deb
     after: [yt-dlp]
     plugin: dump
     stage-packages:
@@ -137,6 +137,10 @@ parts:
       rm -rf share/man
       rm -rf usr/share/ffmpeg/examples
       rm usr/bin/xdman
+      rm -rf lib/python3.8/site-packages/setuptools
+      rm -rf lib/python3.8/site-packages/setuptools-44.0.0.dist-info
+      rm -rf lib/python3.8/site-packages/pip
+      rm -rf lib/python3.8/site-packages/pip-23.2.dist-info
   
   cleanup:
     after:  
