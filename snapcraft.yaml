@@ -9,6 +9,7 @@ description: |
 grade: stable
 confinement: strict
 compression: lzo
+license: GPL-2.0+
 architectures:
   - build-on: amd64  
    
@@ -32,8 +33,6 @@ apps:
     desktop: opt/xdman/xdm-app.desktop
     common-id: xdm.app
     extensions: [gnome-3-38]
-    environment: 
-      TMPDIR: $XDG_RUNTIME_DIR
     plugs:
       - home
       - network
@@ -80,7 +79,7 @@ parts:
     source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
     source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
     python-packages:
-      #- pyxattr==0.8.1
+      #- pyxattr==0.8.1 [Currently focal snap base wont build yt-dlp with pip version, needs system package to build yt-dlp.]
       - wheel==0.40.0 
       - pip==23.2
     build-environment:
@@ -105,7 +104,7 @@ parts:
       - -pyvenv.cfg
       
   xdman:
-    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_amd64.deb
+    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$CRAFT_TARGET_ARCH.deb
     after: [yt-dlp]
     plugin: dump
     stage-packages:
