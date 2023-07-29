@@ -104,7 +104,7 @@ parts:
       - -pyvenv.cfg
       
   xdman:
-    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$CRAFT_TARGET_ARCH.deb
+    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$SNAPCRAFT_TARGET_ARCH.deb
     after: [yt-dlp]
     plugin: dump
     stage-packages:
