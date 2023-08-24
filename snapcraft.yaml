@@ -106,6 +106,7 @@ parts:
     stage:
       - -usr/bin/xdman
       - -usr/share/doc
+      - -usr/share/applications
 
   deps:
     plugin: nil
