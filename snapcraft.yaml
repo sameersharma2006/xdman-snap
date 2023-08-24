@@ -115,9 +115,8 @@ parts:
       - curl 
       - liblttng-ust0
     stage:
-      - usr/lib/*/liblttng-ust.so*
-      - usr/lib/*/libcurl.so*
-      - usr/bin/curl
+      - usr/lib
+      - usr/bin
           
   cleanup:
     after:  
