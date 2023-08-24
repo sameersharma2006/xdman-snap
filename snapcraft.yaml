@@ -13,26 +13,20 @@ license: GPL-2.0+
 architectures:
   - build-on: amd64  
    
-environment:
-   PYTHONPATH: ${SNAP}/lib/python3.8/site-packages:${SNAP}/usr/lib/python3/dist-packages
-
 slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app  #Incorrect DBUS ID Set By Upstream, Could Be Changed In Future .
+    name: xdm.app  
     
-plugs:
-  shmem:
-    interface: shared-memory
-    private: true
-  
 apps:
   xdman: 
     command: opt/xdman/xdm-app
     desktop: opt/xdman/xdm-app.desktop
     common-id: xdm.app
     extensions: [gnome-3-38]
+    environment:
+      PYTHONPATH: ${SNAP}/lib/python3.8/site-packages:${SNAP}/usr/lib/python3/dist-packages
     plugs:
       - home
       - network
@@ -43,8 +37,7 @@ apps:
       - optical-drive
       - unity7
       - screen-inhibit-control
-      - shmem
-      
+     
 parts:
   ffmpeg:
     plugin: autotools
@@ -70,8 +63,10 @@ parts:
       - libvorbis-dev
     stage-packages:
       - libmp3lame0
-    stage:
+    prime:
       - -usr/include
+      - -usr/lib/*/pkgconfig
+      - -usr/share/ffmpeg/examples
 
   yt-dlp:
     after: [ffmpeg]
@@ -79,68 +74,53 @@ parts:
     source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
     source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
     python-packages:
-      #- pyxattr==0.8.1 [Currently focal snap base wont build yt-dlp with pip version, needs system package to build yt-dlp.]
-      - wheel==0.40.0 
-      - pip==23.2
+      - pyxattr==0.7.2
     build-environment:
       - PATH: ${SNAPCRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
-    build-packages:
-      - python3-pyxattr
     override-pull: |
       snapcraftctl pull
       sed -i 's/^certifi\b/#\0/' requirements.txt
-    stage:
-      - -bin/activate
-      - -bin/activate.csh
-      - -bin/activate.fish
+    prime:
+      - -bin/activate*
       - -bin/Activate.ps1
-      - -bin/python
-      - -bin/python3
-      - -bin/python3.8
-      - -bin/pip
-      - -bin/pip3
-      - -bin/pip3.8
+      - -bin/python*
+      - -bin/pip*
       - -pyvenv.cfg
+      - -share/python-wheels
+      - -share/doc
+      - -share/man
+      - -lib/**/setuptools*
+      - -lib/**/pip*
+      - -lib/**/wheel*
+      - -include
       
-  xdman:
+  xdm:
     source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$SNAPCRAFT_TARGET_ARCH.deb
     after: [yt-dlp]
     plugin: dump
-    stage-packages:
-      - curl 
-      - hicolor-icon-theme
-      - liblttng-ust0
-   
-  snap-tweak:
-    plugin: nil
-    after: [xdman]
     override-prime: |
       snapcraftctl prime
       sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
       sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop    
-    
-  fatloss:
+    stage:
+      - -usr/bin/xdman
+      - -usr/share/doc
+
+  deps:
     plugin: nil
-    after: [snap-tweak]
-    override-prime: |
-      snapcraftctl prime
-      rm -rf usr/share/doc
-      rm -rf usr/share/man
-      rm -rf usr/share/zsh     
-      rm -rf usr/share/applications
-      rm -rf usr/share/icons
-      rm -rf share/python-wheels
-      rm -rf share/doc
-      rm -rf share/man
-      rm -rf usr/share/ffmpeg/examples
-      rm usr/bin/xdman
-      rm -rf lib/python3.8/site-packages/setuptools*
-      rm -rf lib/python3.8/site-packages/pip*
-     
+    after: [xdm] 
+    stage-packages:
+      - curl 
+      - liblttng-ust0
+    stage:
+      - usr/lib/*/liblttng-ust.so*
+      - usr/lib/*/libcurl.so*
+      - usr/bin/curl
+          
   cleanup:
     after:  
-      - fatloss
+      - deps
     plugin: nil
     build-snaps: 
       - gnome-3-38-2004
@@ -149,7 +129,7 @@ parts:
     override-prime: |
       set -eux
       for snap in "gnome-3-38-2004" "core20" "gtk-common-themes"; do
-      cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
       done  
       
       
