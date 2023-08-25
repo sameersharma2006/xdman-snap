@@ -109,6 +109,7 @@ parts:
     stage-packages:
       - curl 
       - liblttng-ust0
+      - libnotify-bin 
     prime:
       - opt
       - usr/bin
