@@ -6,6 +6,8 @@ description: |
   XDM Is a Free and Advanced Download Manger For Linux.
   It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume   
   broken/dead downloads, schedule and convert downloads.
+  
+  ** XDM App Is Not Snap Confinement Friendly & As Such All Features Maynot Work Inside The Snap Properly.
 grade: stable
 confinement: strict
 compression: lzo
@@ -104,21 +106,18 @@ parts:
       snapcraftctl prime
       sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
       sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop    
-    stage:
-      - -usr/bin/xdman
-      - -usr/share/doc
-      - -usr/share/applications
-
-  deps:
-    plugin: nil
-    after: [xdm] 
     stage-packages:
       - curl 
       - liblttng-ust0
-    
+    prime:
+      - opt
+      - usr/bin
+      - usr/lib
+      - -usr/bin/xdman
+
   cleanup:
     after:  
-      - deps
+      - xdm
     plugin: nil
     build-snaps: 
       - gnome-3-38-2004
@@ -129,9 +128,4 @@ parts:
       for snap in "gnome-3-38-2004" "core20" "gtk-common-themes"; do
           cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
       done  
-      
-      
-      
-     
-   
-   
+
