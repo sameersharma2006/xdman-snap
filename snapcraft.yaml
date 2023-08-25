@@ -1,4 +1,4 @@
-name: xdman
+name: xdman # Using xdman instead of xdm, since 3-letter names aren't allowed for snaps.
 base: core20
 version: 8.0.29
 summary: Powerfull download accelerator and video downloader. 
@@ -23,10 +23,10 @@ apps:
   xdman: 
     command: opt/xdman/xdm-app
     desktop: opt/xdman/xdm-app.desktop
-    common-id: xdm.app
     extensions: [gnome-3-38]
     environment:
       PYTHONPATH: ${SNAP}/lib/python3.8/site-packages:${SNAP}/usr/lib/python3/dist-packages
+      TMPDIR: $XDG_RUNTIME_DIR
     plugs:
       - home
       - network
@@ -67,6 +67,7 @@ parts:
       - -usr/include
       - -usr/lib/*/pkgconfig
       - -usr/share/ffmpeg/examples
+      - -usr/share/doc
 
   yt-dlp:
     after: [ffmpeg]
@@ -83,7 +84,7 @@ parts:
       sed -i 's/^certifi\b/#\0/' requirements.txt
     prime:
       - -bin/activate*
-      - -bin/Activate.ps1
+      - -bin/Activate*
       - -bin/python*
       - -bin/pip*
       - -pyvenv.cfg
@@ -114,10 +115,7 @@ parts:
     stage-packages:
       - curl 
       - liblttng-ust0
-    stage:
-      - usr/lib
-      - usr/bin
-          
+    
   cleanup:
     after:  
       - deps
