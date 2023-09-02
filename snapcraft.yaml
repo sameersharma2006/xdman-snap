@@ -6,9 +6,6 @@ description: |
   XDM Is a Free and Advanced Download Manger For Linux.
   It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume   
   broken/dead downloads, schedule and convert downloads.
-  
-  ** XDM Is Currently In Beta Stage & May Not Work As Expected.
-  ** XDM App Is Not Snap Confinement Friendly & As Such All Features Maynot Work Inside The Snap Properly.
 grade: stable
 confinement: strict
 compression: lzo
@@ -77,7 +74,7 @@ parts:
     source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
     source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
     python-packages:
-      - pyxattr==0.7.2
+      - pyxattr==0.8.1
     build-environment:
       - PATH: ${SNAPCRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
@@ -109,12 +106,13 @@ parts:
     stage-packages:
       - curl 
       - liblttng-ust0
-      - libnotify-bin 
     prime:
       - opt
       - usr/bin
       - usr/lib
       - -usr/bin/xdman
+      - -usr/lib/sasl2
+      - -usr/lib/*/gdk-pixbuf-2.0
 
   cleanup:
     after:  
