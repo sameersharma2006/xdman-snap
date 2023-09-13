@@ -10,8 +10,14 @@ grade: stable
 confinement: strict
 compression: lzo
 license: GPL-2.0+
+contact: https://launchpad.net/xdm
+issues: https://bugs.launchpad.net/xdm
+source-code: https://git.launchpad.net/xdm
 architectures:
   - build-on: amd64  
+
+assumes:
+  - snapd2.57
    
 slots:
   xdman:
@@ -57,7 +63,6 @@ parts:
       - --enable-libvorbis
     build-packages:
       - nasm
-      - libgnutls28-dev
       - libmp3lame-dev
       - libvorbis-dev
     stage-packages:
@@ -81,7 +86,7 @@ parts:
     override-pull: |
       snapcraftctl pull
       sed -i 's/^certifi\b/#\0/' requirements.txt
-    prime:
+    stage:
       - -bin/activate*
       - -bin/Activate*
       - -bin/python*
@@ -112,7 +117,7 @@ parts:
       - usr/lib
       - -usr/bin/xdman
       - -usr/lib/sasl2
-      - -usr/lib/*/gdk-pixbuf-2.0
+      - -usr/lib/*/gdk-pixbuf*
 
   cleanup:
     after:  
@@ -127,4 +132,3 @@ parts:
       for snap in "gnome-3-38-2004" "core20" "gtk-common-themes"; do
           cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
       done  
-
