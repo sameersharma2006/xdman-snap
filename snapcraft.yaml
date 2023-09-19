@@ -1,10 +1,10 @@
 name: xdman # Using xdman instead of xdm, since 3-letter names aren't allowed for snaps.
 base: core20
 version: 8.0.29
-summary: Powerfull download accelerator and video downloader. 
+summary: Powerfull download accelerator and video downloader.
 description: |
   XDM Is a Free and Advanced Download Manger For Linux.
-  It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume   
+  It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume
   broken/dead downloads, schedule and convert downloads.
 grade: stable
 confinement: strict
@@ -14,19 +14,19 @@ contact: https://launchpad.net/xdm
 issues: https://bugs.launchpad.net/xdm
 source-code: https://git.launchpad.net/xdm
 architectures:
-  - build-on: amd64  
+  - build-on: amd64
 
 assumes:
-  - snapd2.57
-   
+  - snapd2.58
+
 slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app  
-    
+    name: xdm.app
+
 apps:
-  xdman: 
+  xdman:
     command: opt/xdman/xdm-app
     desktop: opt/xdman/xdm-app.desktop
     extensions: [gnome-3-38]
@@ -42,7 +42,7 @@ apps:
       - optical-drive
       - unity7
       - screen-inhibit-control
-     
+
 parts:
   ffmpeg:
     plugin: autotools
@@ -78,10 +78,8 @@ parts:
     plugin: python
     source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
     source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
-    python-packages:
-      - pyxattr==0.8.1
-      - wheel==0.41.2
-      - pip==23.2.1
+    build-packages:
+      - python3-pyxattr
     build-environment:
       - PATH: ${SNAPCRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
@@ -101,7 +99,7 @@ parts:
       - -lib/**/pip*
       - -lib/**/wheel*
       - -include
-      
+
   xdm:
     source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$SNAPCRAFT_TARGET_ARCH.deb
     after: [yt-dlp]
@@ -109,9 +107,9 @@ parts:
     override-prime: |
       snapcraftctl prime
       sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
-      sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop    
+      sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop
     stage-packages:
-      - curl 
+      - curl
       - liblttng-ust0
     prime:
       - opt
@@ -122,10 +120,10 @@ parts:
       - -usr/lib/*/gdk-pixbuf*
 
   cleanup:
-    after:  
+    after:
       - xdm
     plugin: nil
-    build-snaps: 
+    build-snaps:
       - gnome-3-38-2004
       - core20
       - gtk-common-themes
@@ -133,4 +131,4 @@ parts:
       set -eux
       for snap in "gnome-3-38-2004" "core20" "gtk-common-themes"; do
           cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
-      done  
+      done
