@@ -17,7 +17,7 @@ architectures:
   - build-on: amd64
 
 assumes:
-  - snapd2.58
+  - snapd2.56
 
 slots:
   xdman:
@@ -31,6 +31,7 @@ apps:
     desktop: opt/xdman/xdm-app.desktop
     extensions: [gnome-3-38]
     environment:
+      DISABLE_WAYLAND: 1
       PYTHONPATH: ${SNAP}/lib/python3.8/site-packages:${SNAP}/usr/lib/python3/dist-packages
     plugs:
       - home
