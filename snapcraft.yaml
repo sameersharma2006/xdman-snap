@@ -77,8 +77,8 @@ parts:
   yt-dlp:
     after: [ffmpeg]
     plugin: python
-    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.10.07/yt-dlp.tar.gz
-    source-checksum: sha256/39d1a69242cc8235fe1f3e387cd383aae239e563796efb9de0f516133ee14870
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.10.13/yt-dlp.tar.gz
+    source-checksum: sha256/64944f4452a7657b5fb31ae55d823d9411a1a29f9c1071d33fa3e6286e20522a
     build-packages:
       - python3-pyxattr
     build-environment:
