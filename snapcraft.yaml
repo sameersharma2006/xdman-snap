@@ -17,7 +17,7 @@ architectures:
   - build-on: amd64
 
 assumes:
-  - snapd2.56
+  - snapd2.59
 
 slots:
   xdman:
@@ -87,7 +87,7 @@ parts:
     override-pull: |
       snapcraftctl pull
       sed -i 's/^certifi\b/#\0/' requirements.txt
-    stage:
+    prime:
       - -bin/activate*
       - -bin/Activate*
       - -bin/python*
@@ -109,20 +109,24 @@ parts:
       snapcraftctl prime
       sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
       sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop
+    prime:
+      - opt
+
+  deps:
+    after: [xdm]
+    plugin: nil
     stage-packages:
       - curl
       - liblttng-ust0
     prime:
-      - opt
       - usr/bin
       - usr/lib
-      - -usr/bin/xdman
       - -usr/lib/sasl2
       - -usr/lib/*/gdk-pixbuf*
 
   cleanup:
     after:
-      - xdm
+      - deps
     plugin: nil
     build-snaps:
       - gnome-3-38-2004
