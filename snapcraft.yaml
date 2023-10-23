@@ -16,14 +16,11 @@ source-code: https://git.launchpad.net/xdm
 architectures:
   - build-on: amd64
 
-assumes:
-  - snapd2.59
-
 slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app
+    name: xdm.app # Improper DBUS Naming Convention Used By Upstream.
 
 apps:
   xdman:
