@@ -72,7 +72,7 @@ parts:
   yt-dlp:
     after: [ffmpeg]
     plugin: python
-    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.11.16/yt-dlp.tar.gz
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.12.30/yt-dlp.tar.gz
     build-packages:
       - python3-pyxattr
     build-environment:
