@@ -43,7 +43,7 @@ apps:
 parts:
   ffmpeg:
     plugin: autotools
-    source: https://ffmpeg.org/releases/ffmpeg-6.1.tar.xz
+    source: https://ffmpeg.org/releases/ffmpeg-6.1.1.tar.xz
     autotools-configure-parameters:
       - --prefix=/usr
       - --libdir=/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
