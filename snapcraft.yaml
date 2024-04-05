@@ -102,28 +102,3 @@ parts:
       sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop
     prime:
       - opt
-
-  deps:
-    after: [xdm]
-    plugin: nil
-    stage-packages:
-      - curl
-    prime:
-      - usr/bin
-      - usr/lib
-      - -usr/lib/sasl2
-      - -usr/lib/*/gdk-pixbuf*
-
-  cleanup:
-    after:
-      - deps
-    plugin: nil
-    build-snaps:
-      - gnome-42-2204
-      - core22
-      - gtk-common-themes
-    override-prime: |
-      set -eux
-      for snap in "gnome-42-2204" "core22" "gtk-common-themes"; do
-          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
-      done
