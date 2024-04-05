@@ -1,48 +1,49 @@
-name: xdman
+name: xdman # Using xdman instead of xdm, since 3-letter names aren't allowed for snaps.
 base: core22
-version: '8.0.29'
-summary: Powerfull download accelerator and video downloader. 
+version: 8.0.29
+summary: Powerfull download accelerator and video downloader.
 description: |
   XDM Is a Free and Advanced Download Manger For Linux.
-  It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume   
+  It is a powerful tool to increase download speeds up to 500%, save videos from popular video streaming websites, resume
   broken/dead downloads, schedule and convert downloads.
 grade: stable
 confinement: strict
 compression: lzo
+license: GPL-2.0+
+contact: https://launchpad.net/xdm
+issues: https://bugs.launchpad.net/xdm
+source-code: https://git.launchpad.net/xdm
 architectures:
-  - build-on: amd64   
-environment:
-   PYTHONPATH: ${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
+  - build-on: amd64
 
 slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app
-    
+    name: xdm.app # Invalid DBUS Naming Convention Used By Upstream.
+
 apps:
-  xdman: 
+  xdman:
     command: opt/xdman/xdm-app
+    desktop: opt/xdman/xdm-app.desktop
     extensions: [gnome]
-    environment: 
-      TMPDIR: $XDG_RUNTIME_DIR
+    environment:
+      DISABLE_WAYLAND: 1
+      PYTHONPATH: ${SNAP}/lib/python3.10/site-packages:${SNAP}/usr/lib/python3/dist-packages
     plugs:
       - home
       - network
       - network-bind
       - network-status
-      - browser-support
-      - audio-playback
-      - optical-drive
       - removable-media
+      - optical-drive
       - unity7
       - screen-inhibit-control
 
 parts:
   ffmpeg:
     plugin: autotools
-    source: https://ffmpeg.org/releases/ffmpeg-6.0.tar.xz
-    source-checksum: sha256/57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082
+    source: https://ffmpeg.org/releases/ffmpeg-6.1.1.tar.xz
     autotools-configure-parameters:
       - --prefix=/usr
       - --libdir=/usr/lib/$CRAFT_ARCH_TRIPLET
@@ -58,84 +59,71 @@ parts:
       - --enable-libvorbis
     build-packages:
       - nasm
-      - libgnutls28-dev
       - libmp3lame-dev
       - libvorbis-dev
     stage-packages:
       - libmp3lame0
-    stage:
+    prime:
       - -usr/include
+      - -usr/lib/*/pkgconfig
+      - -usr/share/ffmpeg/examples
+      - -usr/share/doc
 
   yt-dlp:
-    # Missing optional dependencies atomicparsley, mpv, phantomjs and rtmpdump
     after: [ffmpeg]
     plugin: python
-    source: https://github.com/yt-dlp/yt-dlp/releases/download/2023.07.06/yt-dlp.tar.gz
-    source-checksum: sha256/6d2115b84b6c11867f92cf4c23705b536bfa0ba9d538b1885f52da6756f8c980
-    python-packages:
-      - pyxattr==0.7.2
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2024.03.10/yt-dlp.tar.gz
+    build-packages:
+      - python3-pyxattr
     build-environment:
-      # WORKAROUND: The python plugin is broken with gnome extension
       - PATH: ${CRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
-    override-pull: |
-      craftctl default
-      sed -i 's/^certifi\b/#\0/' requirements.txt
-    stage:
-      # WORKAROUND: Skip venv from python plugin
-      - -bin/activate
-      - -bin/activate.csh
-      - -bin/activate.fish
-      - -bin/Activate.ps1
-      - -bin/python
-      - -bin/python3
-      - -bin/python3.10
-      - -bin/pip
-      - -bin/pip3
-      - -bin/pip3.10
+    prime:
+      - -bin/activate*
+      - -bin/Activate*
+      - -bin/python*
+      - -bin/pip*
       - -pyvenv.cfg
-  
-  xdman:
-    source: https://github.com/subhra74/xdm/releases/download/8.0.29/xdman_gtk_8.0.29_amd64.deb
+      - -share/python-wheels
+      - -share/doc
+      - -share/man
+      - -lib/**/setuptools*
+      - -lib/**/pip*
+      - -lib/**/wheel*
+      - -include
+
+  xdm:
+    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$CRAFT_TARGET_ARCH.deb
+    after: [yt-dlp]
     plugin: dump
+    override-prime: |
+      craftctl default
+      sed -e 's|Icon=/opt/xdman/xdm-logo.svg|Icon=${SNAP}/opt/xdman/xdm-logo.svg|' -i opt/xdman/xdm-app.desktop
+      sed -e 's|Exec=env GTK_USE_PORTAL=1 /opt/xdman/xdm-app %U|Exec=opt/xdman/xdm-app %U|' -i opt/xdman/xdm-app.desktop
+    prime:
+      - opt
+
+  deps:
+    after: [xdm]
+    plugin: nil
     stage-packages:
-      - curl 
-      - hicolor-icon-theme
-      - liblttng-ust1
-    override-prime: |
-      craftctl default
-      # evil hack around some newer lib versions
-      cd $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/
-      ln -sf liblttng-ust.so.1 liblttng-ust.so.0  
-    
-  fatloss:
-    plugin: nil
-    after: [xdman]
-    override-prime: |
-      craftctl default
-      rm -r usr/share/doc
-      rm -r usr/share/man
-      rm -r usr/share/zsh     
-      rm -r usr/share/applications
-      rm -r usr/share/icons
-      rm usr/bin/xdman
-  
+      - curl
+    prime:
+      - usr/bin
+      - usr/lib
+      - -usr/lib/sasl2
+      - -usr/lib/*/gdk-pixbuf*
+
   cleanup:
-    after:  
-      - fatloss
+    after:
+      - deps
     plugin: nil
-    build-snaps: 
+    build-snaps:
       - gnome-42-2204
       - core22
       - gtk-common-themes
     override-prime: |
       set -eux
       for snap in "gnome-42-2204" "core22" "gtk-common-themes"; do
-      cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
-      done  
-      
-      
-      
-     
-   
-   
+          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$CRAFT_PRIME/{}" \;
+      done
