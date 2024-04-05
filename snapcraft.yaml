@@ -20,7 +20,7 @@ slots:
   xdman:
     interface: dbus
     bus: session
-    name: xdm.app # Improper DBUS Naming Convention Used By Upstream.
+    name: xdm.app # Invalid DBUS Naming Convention Used By Upstream.
 
 apps:
   xdman:
@@ -78,9 +78,6 @@ parts:
     build-environment:
       - PATH: ${SNAPCRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
-    override-pull: |
-      snapcraftctl pull
-      sed -i 's/^certifi\b/#\0/' requirements.txt
     prime:
       - -bin/activate*
       - -bin/Activate*
