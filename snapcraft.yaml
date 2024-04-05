@@ -16,6 +16,12 @@ source-code: https://git.launchpad.net/xdm
 architectures:
   - build-on: amd64
 
+lint:
+  ignore:
+    - classic
+    - library:
+      - opt/xdman/libcoreclrtraceptprovider.so
+
 slots:
   xdman:
     interface: dbus
