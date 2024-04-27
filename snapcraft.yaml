@@ -10,9 +10,15 @@ grade: stable
 confinement: strict
 compression: lzo
 license: GPL-2.0+
-contact: https://launchpad.net/xdm
-issues: https://bugs.launchpad.net/xdm
-source-code: https://git.launchpad.net/xdm
+contact:
+  - https://launchpad.net/xdm
+  - https://github.com/sameersharma2006/xdman-snap
+issues:
+  - https://bugs.launchpad.net/xdm
+  - https://github.com/sameersharma2006/xdman-snap/issues
+source-code:
+  - https://git.launchpad.net/xdm/tree/snapcraft.yaml
+  - https://github.com/sameersharma2006/xdman-snap/blob/main/snapcraft.yaml
 architectures:
   - build-on: amd64
 
@@ -42,7 +48,6 @@ apps:
       - network-bind
       - network-status
       - removable-media
-      - optical-drive
       - unity7
       - screen-inhibit-control
 
@@ -78,9 +83,7 @@ parts:
   yt-dlp:
     after: [ffmpeg]
     plugin: python
-    source: https://github.com/yt-dlp/yt-dlp/releases/download/2024.03.10/yt-dlp.tar.gz
-    build-packages:
-      - python3-pyxattr
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2024.04.09/yt-dlp.tar.gz
     build-environment:
       - PATH: ${CRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
