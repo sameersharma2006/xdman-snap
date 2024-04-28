@@ -16,9 +16,7 @@ contact:
 issues:
   - https://bugs.launchpad.net/xdm
   - https://github.com/sameersharma2006/xdman-snap/issues
-source-code:
-  - https://git.launchpad.net/xdm/tree/snapcraft.yaml
-  - https://github.com/sameersharma2006/xdman-snap/blob/main/snapcraft.yaml
+source-code: https://git.launchpad.net/xdm/tree/snapcraft.yaml
 architectures:
   - build-on: amd64
 
