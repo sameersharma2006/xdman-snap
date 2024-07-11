@@ -81,7 +81,7 @@ parts:
   yt-dlp:
     after: [ffmpeg]
     plugin: python
-    source: https://github.com/yt-dlp/yt-dlp/releases/download/2024.05.27/yt-dlp.tar.gz
+    source: https://github.com/yt-dlp/yt-dlp/releases/download/2024.07.09/yt-dlp.tar.gz
     build-environment:
       - PATH: ${CRAFT_PART_INSTALL}/bin:${PATH}
       - PYTHONPATH: ""
@@ -100,7 +100,7 @@ parts:
       - -include
 
   xdm:
-    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$CRAFT_TARGET_ARCH.deb
+    source: https://github.com/subhra74/xdm/releases/download/$SNAPCRAFT_PROJECT_VERSION/xdman_gtk_$SNAPCRAFT_PROJECT_VERSION_$CRAFT_ARCH_BUILD_FOR.deb
     after: [yt-dlp]
     plugin: dump
     override-prime: |
